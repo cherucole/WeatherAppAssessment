@@ -1,5 +1,5 @@
 //
-//  WeatherAppAssessmentApp.swift
+//  AppEntry.swift
 //  WeatherAppAssessment
 //
 //  Created by Cheruiyot Collins on 08/01/2025.
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct WeatherAppAssessmentApp: App {
+struct AppEntry: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
