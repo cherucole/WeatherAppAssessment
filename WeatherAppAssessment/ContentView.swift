@@ -11,6 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+    
+    @State private var locationVM = LocationViewModel()
 
     var body: some View {
         NavigationSplitView {
@@ -36,6 +38,9 @@ struct ContentView: View {
             }
         } detail: {
             Text("Select an item")
+        }
+        .onAppear {
+            locationVM.checkIfLocationServicesEnabled()
         }
     }
 
