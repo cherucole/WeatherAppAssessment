@@ -8,24 +8,22 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
+            VStack {
+                Text("25")
+                Text("Sunny")
+            }
+            .font(.largeTitle.bold())
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background {
                 Image(.forestSunny)
                     .resizable()
-//                    .ignoresSafeArea()
-//                    .scaledToFill()
-//                    .frame(maxHeight: .infinity)
-                    .ignoresSafeArea()
-                VStack {
-                    Text("25")
-                    Text("Sunny")
-                }
-                .font(.largeTitle.bold())
-                
+                    .scaledToFill()
+                    .frame(maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .clipped()
             
             VStack {
                 HStack {
@@ -48,6 +46,20 @@ struct HomeView: View {
                 Rectangle()
                     .fill(.white)
                     .frame(height: 1)
+                
+                Grid(alignment: .top) {
+                    GridRow {
+                        Text("Tuesday")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Image(.clear)
+                            .frame(maxWidth: .infinity)
+                        
+                        Text("19")
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }
+                .padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
