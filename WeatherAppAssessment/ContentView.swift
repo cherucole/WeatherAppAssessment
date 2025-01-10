@@ -42,6 +42,10 @@ struct ContentView: View {
         .onAppear {
             locationVM.checkIfLocationServicesEnabled()
         }
+        .task(id: locationVM.cordinates) {
+            guard let currentLocation = locationVM.cordinates else { return }
+            try? await WeatherService().getCurrentWeather(location: currentLocation)
+        }
     }
 
     private func addItem() {
