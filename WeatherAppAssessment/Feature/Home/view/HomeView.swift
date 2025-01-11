@@ -44,7 +44,7 @@ struct HomeView: View {
         .ignoresSafeArea()
         .background(Color.sunny)
         .task {
-//            await weatherVM.getWeather(for: <#T##CLLocationCoordinate2D#>)
+            await weatherVM.getWeather(for: location)
         }
     }
     
