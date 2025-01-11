@@ -44,7 +44,8 @@ struct ContentView: View {
         }
         .task(id: locationVM.cordinates) {
             guard let currentLocation = locationVM.cordinates else { return }
-            try? await WeatherService().getCurrentWeather(location: currentLocation)
+//            try? await WeatherService().getCurrentWeather(location: currentLocation)
+            try? await WeatherService().getFiveDayForecast(location: currentLocation)
         }
     }
 

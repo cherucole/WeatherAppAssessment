@@ -15,11 +15,11 @@ import SwiftUI
 // fetch data from here if needed based location changes
 struct HomeView: View {
     
-    
+    let temp = Measurement(value: 25, unit: UnitTemperature.celsius)
     var body: some View {
         VStack(spacing: 0) {
             VStack {
-                Text("25")
+                Text(temp.formatted(.measurement(width: .abbreviated, usage: .weather)))
                 Text("Sunny")
             }
             .font(.largeTitle.bold())

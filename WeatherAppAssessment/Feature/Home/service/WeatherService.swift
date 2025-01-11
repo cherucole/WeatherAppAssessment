@@ -17,10 +17,12 @@ struct WeatherService {
     init(client: HTTPClient = APIClient()) {
         self.client = client
     }
+    
     let parser = DataParser()
     
-    func getCurrentWeather(location: CLLocationCoordinate2D) async throws {
-        let request = try currentWeatherRequest(location: location)
+    func getCurrentWeather(location: CLLocationCoordinate2D) async throws -> CurrentWeatherAPIResponse {
+        let currentWeatherBaseURL = "https://api.openweathermap.org/data/2.5/weather?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(APIConstants.openWeatherAPIKey)"
+        let request = try urlRequest(urlString: currentWeatherBaseURL)
         let (data, response) = try await client.request(request: request)
         guard response.statusCode == 200 else {
             logger.warning("Failed to get current weather")
@@ -28,13 +30,24 @@ struct WeatherService {
         }
         let weatherResponse: CurrentWeatherAPIResponse = try parser.parse(data: data)
         logger.log("Current weather retrieved successfully")
+        return weatherResponse
     }
     
-    private func currentWeatherRequest(location: CLLocationCoordinate2D) throws -> URLRequest {
-        let latitude = location.latitude.formatted(.number.precision(.fractionLength(2)))
-        let longitude = location.longitude.formatted(.number.precision(.fractionLength(2)))
-        let currentWeatherBaseURL = "https://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=\(APIConstants.openWeatherAPIKey)"
-        guard let url = URL(string: currentWeatherBaseURL) else {
+    func getFiveDayForecast(location: CLLocationCoordinate2D) async throws -> WeatherForecastAPIResponse {
+        let forecastBaseURL = "https://api.openweathermap.org/data/2.5/forecast?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(APIConstants.openWeatherAPIKey)"
+        let request = try urlRequest(urlString: forecastBaseURL)
+        let (data, response) = try await client.request(request: request)
+        guard response.statusCode == 200 else {
+            logger.warning("Failed to get current weather")
+            throw Error.other(message: "Failed to get current weather")
+        }
+        let forecastResponse: WeatherForecastAPIResponse = try parser.parse(data: data)
+        logger.log("weather forecast retrieved successfully")
+        return forecastResponse
+    }
+    
+    private func urlRequest(urlString: String) throws -> URLRequest {
+        guard let url = URL(string: urlString) else {
             throw Error.invalidURL
         }
         var request = URLRequest(url: url)
