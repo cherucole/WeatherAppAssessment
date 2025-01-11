@@ -7,27 +7,17 @@
 
 import SwiftUI
 import MapKit
-//1. Use a formatter to show temperature correctly
-// create a model that is purely for UI so we are protected from backend changes
-// make backgrounds dynamic
-// make colors dynamic
-// make icons dynamic
-// fetch data from here if needed based location changes
-
 
 // add a favorites button on top right
 // add a list icon on footer to open favourites
 // add a view on map icon/button for current weather
 // add a serach icon to allow searching cities
+
 struct HomeView: View {
+    @Environment(LocationViewModel.self) private var locationVM
+    
     @State private var weatherVM = WeatherViewModel()
-    let temp = Measurement(value: 25, unit: UnitTemperature.celsius)
-    
-    @State var location: CLLocationCoordinate2D
-    
-    init(location: CLLocationCoordinate2D) {
-        self._location = State(wrappedValue: location)
-    }
+    @State var location: CLLocationCoordinate2D?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -49,7 +39,13 @@ struct HomeView: View {
         .ignoresSafeArea()
         .background(Color.sunny)
         .task {
-            await weatherVM.getWeather(for: location)
+            self.location = locationVM.getUserLocation()
+        }
+        .onChange(of: location) { oldLocation, newLocation in
+            guard let newLocation else { return }
+            Task {
+                await weatherVM.getWeather(for: newLocation)
+            }
         }
     }
     
@@ -73,7 +69,6 @@ struct HomeView: View {
     @ViewBuilder
     func headerView(_ weather: CurrentWeather) -> some View {
         VStack(spacing: 8) {
-            //                Text(temp.formatted(.measurement(width: .abbreviated, usage: .weather)))
             Text(weather.temperature.toTemperatureString())
                 .font(.system(size: 56, weight: .medium))
             Text(weather.description.uppercased())
@@ -143,11 +138,4 @@ struct HomeView: View {
 
 #Preview {
     HomeView(location: .init(latitude: 0, longitude: 36))
-//    HomeView(
-//        currentWeather: CurrentWeather(apiResponse: Mock.currentWeather()),
-//        forecast: Mock.weatherForecast().list.map { ForecastItem(apiResponse: $0) }
-//    )
-//    .onAppear {
-//        print(Mock.currentWeather())
-//    }
 }

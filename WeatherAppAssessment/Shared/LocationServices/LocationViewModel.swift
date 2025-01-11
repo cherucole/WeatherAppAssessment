@@ -12,8 +12,9 @@ import OSLog
 fileprivate let logger = Logger.createLog(category: "LocationViewModel")
 
 @Observable
-final class LocationViewModel: NSObject, CLLocationManagerDelegate {
+final class LocationViewModel {
     var locationManager: CLLocationManager?
+//    var delegate: CLLocationManagerDelegate
     
     var presentLocationServicesDisabledWarning = false
     var presentLocationRestrictedWarning = false
@@ -21,13 +22,34 @@ final class LocationViewModel: NSObject, CLLocationManagerDelegate {
     
     var cordinates: CLLocationCoordinate2D?
     
+//    init(delegate: CLLocationManagerDelegate) {
+//        guard CLLocationManager.locationServicesEnabled() else {
+//            presentLocationServicesDisabledWarning = true
+//            return
+//        }
+////        self.delegate = delegate
+//        let locationManager = CLLocationManager()
+//        locationManager.delegate = delegate
+//        self.locationManager = locationManager
+//    }
+    
     func checkIfLocationServicesEnabled() {
+//        guard CLLocationManager.locationServicesEnabled() else {
+//            presentLocationServicesDisabledWarning = true
+//            return
+//        }
+//        locationManager = CLLocationManager()
+//        locationManager!.delegate = self
+    }
+    
+    func setupLocationServices(delegate: CLLocationManagerDelegate) {
         guard CLLocationManager.locationServicesEnabled() else {
             presentLocationServicesDisabledWarning = true
             return
         }
         locationManager = CLLocationManager()
-        locationManager!.delegate = self
+        locationManager!.delegate = delegate
+        updateLocationAuthorizationStatus()
     }
     
     private func updateLocationAuthorizationStatus() {
@@ -48,7 +70,30 @@ final class LocationViewModel: NSObject, CLLocationManagerDelegate {
         }
     }
     
+//    func getAuthorizationStatus() -> CLAuthorizationStatus {
+//        locationManager!.authorizationStatus
+//    }
+    
+    func getUserLocation() -> CLLocationCoordinate2D? {
+        locationManager?.location?.coordinate
+    }
+    
+//    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+//        updateLocationAuthorizationStatus()
+//    }
+}
+
+@Observable
+final class PermissionViewModel: NSObject, CLLocationManagerDelegate {
+    static var shared = PermissionViewModel()
+    
+    private override init() {}
+
+    @MainActor var status: CLAuthorizationStatus = .notDetermined
+    
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        updateLocationAuthorizationStatus()
+        Task { @MainActor in
+            self.status = manager.authorizationStatus
+        }
     }
 }

@@ -8,17 +8,25 @@
 import SwiftUI
 
 struct AppLayout: View {
+    @State private var permissionVM = PermissionViewModel.shared
     @State private var locationVM = LocationViewModel()
-
+    
     var body: some View {
         Group {
-            if let cordinates = locationVM.cordinates {
-                HomeView(location: cordinates)
-            } else {
+            switch permissionVM.status {
+            case .authorizedWhenInUse, .authorized, .authorizedAlways:
+                HomeView()
+            case .notDetermined, .restricted, .denied:
                 RequestLocationAccessView()
+            @unknown default:
+                Text("Unhandled Permission Status")
             }
         }
         .environment(locationVM)
+        .environment(permissionVM)
+        .task {
+            locationVM.setupLocationServices(delegate: permissionVM)
+        }
     }
 }
 

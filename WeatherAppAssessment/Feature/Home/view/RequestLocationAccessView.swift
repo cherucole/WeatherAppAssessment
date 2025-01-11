@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RequestLocationAccessView: View {
     @Environment(LocationViewModel.self) private var locationVM
+    @Environment(PermissionViewModel.self) private var permissionVM
     
     var body: some View {
         ContentUnavailableView {
@@ -17,15 +18,15 @@ struct RequestLocationAccessView: View {
             Text("Please allow your location to get weather updates relevant to you")
         } actions: {
             Group {
-                if locationVM.presentLocationDeniedWarning {
+                if permissionVM.status == .denied {
                     Button {
                         SystemRouter.openSettings()
                     } label: {
                         Text("Open Settings")
                     }
-                } else {
+                } else if permissionVM.status == .notDetermined {
                     Button {
-                        locationVM.checkIfLocationServicesEnabled()
+                        locationVM.setupLocationServices(delegate: permissionVM)
                     } label: {
                         Text("Continue")
                     }
@@ -33,7 +34,6 @@ struct RequestLocationAccessView: View {
             }
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
-           
         }
     }
 }
