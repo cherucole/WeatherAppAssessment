@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct ForecastItem {
+struct ForecastItem: Identifiable {
+    let id = UUID()
     let date: Date
     let condition: String
     let temperature: Double

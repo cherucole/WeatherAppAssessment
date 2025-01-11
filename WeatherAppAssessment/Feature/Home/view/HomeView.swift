@@ -28,14 +28,24 @@ struct HomeView: View {
         }
     }
     
+    func conditionSymbol(_ condition: String) -> ImageResource {
+        switch condition.lowercased() {
+        case "rain": .rain
+        case "clear": .clear
+        case "partlysunny": .partlysunny
+        default: .clear
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
-            VStack {
+            VStack(spacing: 8) {
                 //                Text(temp.formatted(.measurement(width: .abbreviated, usage: .weather)))
                 Text(currentWeather.temperature.toTemperatureString())
-                Text(currentWeather.description)
+                    .font(.system(size: 56, weight: .medium))
+                Text(currentWeather.description.uppercased())
+                    .font(.system(size: 36, weight: .medium))
             }
-            .font(.largeTitle.bold())
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
                 Image(backgroundImage)
@@ -47,41 +57,53 @@ struct HomeView: View {
             VStack {
                 HStack {
                     VStack {
-                        Text("19")
+                        Text(currentWeather.minTemp.toTemperatureString())
                         Text("min")
+                            .fontWeight(.light)
                     }
                     Spacer()
                     VStack {
-                        Text("19")
-                        Text("min")
+                        Text(currentWeather.temperature.toTemperatureString())
+                        Text("current")
+                            .fontWeight(.light)
                     }
                     Spacer()
                     VStack {
-                        Text("19")
-                        Text("min")
+                        Text(currentWeather.maxTemp.toTemperatureString())
+                        Text("max")
+                            .fontWeight(.light)
                     }
                 }
                 .padding(.horizontal)
+                .padding(.top, 8)
+                
                 Rectangle()
                     .fill(.white)
                     .frame(height: 1)
                 
-                Grid(alignment: .top) {
-                    GridRow {
-                        Text("Tuesday")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Image(.clear)
-                            .frame(maxWidth: .infinity)
-                        
-                        Text("19")
-                            .frame(maxWidth: .infinity, alignment: .trailing)
+                Grid(alignment: .top, verticalSpacing: 24) {
+                    ForEach(forecast) { forecast in
+                        GridRow {
+                            Text(forecast.date.formatted(.dateTime.weekday(.wide)))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Image(conditionSymbol(forecast.condition))
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 28)
+                                .frame(maxWidth: .infinity)
+                            
+                            Text(forecast.temperature.toTemperatureString())
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
                     }
                 }
+                .font(.title3)
                 .padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+        .foregroundStyle(.white)
         .ignoresSafeArea()
         .background(Color.sunny)
     }
