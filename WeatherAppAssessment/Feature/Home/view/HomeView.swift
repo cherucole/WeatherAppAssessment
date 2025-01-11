@@ -54,6 +54,7 @@ struct HomeView: View {
                 .buttonStyle(.plain)
                 Spacer()
                 Text("Search")
+//                Label("Search", systemImage: "magnifyingglass")
             }
             .foregroundStyle(.white)
             .font(.title3.weight(.medium))
