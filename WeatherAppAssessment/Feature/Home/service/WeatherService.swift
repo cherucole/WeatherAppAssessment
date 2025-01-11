@@ -21,7 +21,7 @@ struct WeatherService {
     let parser = DataParser()
     
     func getCurrentWeather(location: CLLocationCoordinate2D) async throws -> CurrentWeatherAPIResponse {
-        let currentWeatherBaseURL = "https://api.openweathermap.org/data/2.5/weather?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(APIConstants.openWeatherAPIKey)"
+        let currentWeatherBaseURL = "https://api.openweathermap.org/data/2.5/weather?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(APIConstants.openWeatherAPIKey)&units=metric"
         let request = try urlRequest(urlString: currentWeatherBaseURL)
         let (data, response) = try await client.request(request: request)
         guard response.statusCode == 200 else {
@@ -34,7 +34,7 @@ struct WeatherService {
     }
     
     func getFiveDayForecast(location: CLLocationCoordinate2D) async throws -> WeatherForecastAPIResponse {
-        let forecastBaseURL = "https://api.openweathermap.org/data/2.5/forecast?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(APIConstants.openWeatherAPIKey)"
+        let forecastBaseURL = "https://api.openweathermap.org/data/2.5/forecast?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(APIConstants.openWeatherAPIKey)&units=metric"
         let request = try urlRequest(urlString: forecastBaseURL)
         let (data, response) = try await client.request(request: request)
         guard response.statusCode == 200 else {
