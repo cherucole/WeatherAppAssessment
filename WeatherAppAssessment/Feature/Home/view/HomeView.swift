@@ -36,9 +36,24 @@ struct HomeView: View {
                 .foregroundStyle(.white)
                 .ignoresSafeArea()
                 .background(backgroundColor(weather.description))
+                .overlay(alignment: .topTrailing) {
+                    FavoriteButton(currentWeather: weather)
+                        .padding(.trailing, 12)
+                }
             case .error(let description):
                 ContentUnavailableView("Something Went Wrong", systemImage: "exclamationmark.triangle", description: Text("\(description). Please try again"))
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            HStack {
+                Text("Favourites")
+                Spacer()
+                Text("Search")
+            }
+            .foregroundStyle(.white)
+            .font(.title3.weight(.medium))
+            .padding()
+            .background(Material.ultraThin.opacity(0.4))
         }
         .task {
             self.location = locationVM.getUserLocation()
@@ -148,4 +163,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView(location: .init(latitude: 0, longitude: 36))
+        .environment(LocationViewModel())
 }
