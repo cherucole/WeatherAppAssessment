@@ -11,12 +11,16 @@ struct CurrentWeather {
     let temperature: Double
     let description: String
     let minTemp: Double
-    let currentTemp: Double
     let maxTemp: Double
 }
 
-struct ForecastItem {
-    let day: String
-    let condition: String
-    let temperature: Double
+extension CurrentWeather {
+    init(apiResponse: CurrentWeatherAPIResponse) {
+        self.temperature = apiResponse.main.temp
+        self.description = apiResponse.weather.first?.main ?? "Clear"
+        self.minTemp = apiResponse.main.tempMin
+        self.maxTemp = apiResponse.main.tempMax
+    }
 }
+
+
