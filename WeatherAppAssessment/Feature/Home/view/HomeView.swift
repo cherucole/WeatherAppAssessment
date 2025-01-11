@@ -29,15 +29,17 @@ struct HomeView: View {
                 ProgressView("Getting your weather...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .loaded(let weather, let forecast):
-                headerView(weather)
-                forecastView(weather: weather, forecast: forecast)
+                VStack(spacing: 0) {
+                    headerView(weather)
+                    forecastView(weather: weather, forecast: forecast)
+                }
+                .foregroundStyle(.white)
+                .ignoresSafeArea()
+                .background(backgroundColor(weather.description))
             case .error(let description):
                 ContentUnavailableView("Something Went Wrong", systemImage: "exclamationmark.triangle", description: Text("\(description). Please try again"))
             }
         }
-        .foregroundStyle(.white)
-        .ignoresSafeArea()
-        .background(Color.sunny)
         .task {
             self.location = locationVM.getUserLocation()
         }
@@ -49,10 +51,18 @@ struct HomeView: View {
         }
     }
     
+    func backgroundColor(_ condition: String) -> Color {
+        switch condition.lowercased() {
+        case "rain": .rainy
+        case "clouds": .cloudy
+        default: .sunny
+        }
+    }
+    
     func backgroundImage(_ condition: String) -> ImageResource {
         switch condition.lowercased() {
-        case "rainy": .forestRainy
-        case "cloudy": .forestCloudy
+        case "rain": .forestRainy
+        case "clouds": .forestCloudy
         default: .forestSunny
         }
     }
