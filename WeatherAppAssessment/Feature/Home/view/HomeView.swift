@@ -19,6 +19,8 @@ struct HomeView: View {
     @State private var weatherVM = WeatherViewModel()
     @State var location: CLLocationCoordinate2D?
     
+    @State private var presentFavorites = false
+    
     var body: some View {
         VStack(spacing: 0) {
             switch weatherVM.status {
@@ -46,7 +48,10 @@ struct HomeView: View {
         }
         .safeAreaInset(edge: .bottom) {
             HStack {
-                Text("Favourites")
+                Button("Favorites") {
+                    presentFavorites = true
+                }
+                .buttonStyle(.plain)
                 Spacer()
                 Text("Search")
             }
@@ -54,6 +59,9 @@ struct HomeView: View {
             .font(.title3.weight(.medium))
             .padding()
             .background(Material.ultraThin.opacity(0.4))
+        }
+        .sheet(isPresented: $presentFavorites) {
+            FavoritesList()
         }
         .task {
             self.location = locationVM.getUserLocation()
