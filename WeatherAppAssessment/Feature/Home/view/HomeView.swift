@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+//1. Use a formatter to show temperature correctly
+// create a model that is purely for UI so we are protected from backend changes
+// make backgrounds dynamic
+// make colors dynamic
+// make icons dynamic
+// fetch data from here if needed based location changes
 struct HomeView: View {
     
     
