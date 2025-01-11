@@ -11,34 +11,36 @@ import MapKit
 
 @Observable
 final class WeatherViewModel {
+    enum Status {
+        case idle
+        case loading
+        case loaded(weather: CurrentWeather, forecast: [ForecastItem])
+        case error(description: String)
+    }
+    
     let service: WeatherService
     
     init(service: WeatherService = WeatherService()) {
         self.service = service
     }
     
-    var currentWeather: CurrentWeather?
-    var forecastItems: [ForecastItem] = []
-    
-    var presentError = false
-    var error: ErrorWrapper?
-    
+    var status: Status = .idle
     let calendar = Calendar.current
     
     func getWeather(for location: CLLocationCoordinate2D) async {
+        status = .loading
         do {
-            async let currentWeather = try service.getCurrentWeather(location: location)
-            async let weatherForecast = try service.getFiveDayForecast(location: location)
-            let (weatherResponse, forecastResponse) = try await (currentWeather, weatherForecast)
-            self.currentWeather = CurrentWeather(apiResponse: weatherResponse)
-            let items = forecastResponse.list.map({ ForecastItem(apiResponse: $0) }).filter { item in
+            async let currentWeatherRequest = try service.getCurrentWeather(location: location)
+            async let weatherForecastRequest = try service.getFiveDayForecast(location: location)
+            let (weatherResponse, forecastResponse) = try await (currentWeatherRequest, weatherForecastRequest)
+            let currentWeather = CurrentWeather(apiResponse: weatherResponse)
+            let forecastItems = forecastResponse.list.map({ ForecastItem(apiResponse: $0) }).filter { item in
                 let hour = calendar.component(.hour, from: item.date)
                 return hour == 12
             }
-            self.forecastItems = items
+            status = .loaded(weather: currentWeather, forecast: forecastItems)
         } catch {
-            self.presentError = true
-            self.error = .init(error.localizedDescription)
+            status = .error(description: error.localizedDescription)
         }
     }
 }
