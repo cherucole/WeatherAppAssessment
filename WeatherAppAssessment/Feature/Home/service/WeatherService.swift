@@ -11,7 +11,12 @@ import OSLog
 
 fileprivate let logger = Logger.createLog(category: "WeatherService")
 
-struct WeatherService {
+protocol WeatherService {
+    func getCurrentWeather(location: CLLocationCoordinate2D) async throws -> CurrentWeatherAPIResponse
+    func getFiveDayForecast(location: CLLocationCoordinate2D) async throws -> WeatherForecastAPIResponse
+}
+
+struct OpenWeatherService: WeatherService {
     let client: HTTPClient
     
     init(client: HTTPClient = APIClient()) {
@@ -57,7 +62,7 @@ struct WeatherService {
     }
 }
 
-extension WeatherService {
+extension OpenWeatherService {
     enum Error: Swift.Error, LocalizedError {
         case invalidURL
         case other(message: String)

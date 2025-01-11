@@ -20,7 +20,7 @@ final class WeatherViewModel {
     
     let service: WeatherService
     
-    init(service: WeatherService = WeatherService()) {
+    init(service: WeatherService = OpenWeatherService()) {
         self.service = service
     }
     
