@@ -99,7 +99,20 @@ struct HomeView: View {
                     }
                 }
             case .error(let description):
-                ContentUnavailableView("Something Went Wrong", systemImage: "exclamationmark.triangle", description: Text("\(description). Please try again"))
+                ContentUnavailableView {
+                    Label("Something Went Wrong", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text("\(description). Please try again")
+                } actions: {
+                    Button("Retry") {
+                        Task {
+                            guard let location = locationVM.getUserLocation() else { return }
+                            await weatherVM.getWeather(for: location)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                }
             }
         }
         .sheet(isPresented: $presentFavorites) {

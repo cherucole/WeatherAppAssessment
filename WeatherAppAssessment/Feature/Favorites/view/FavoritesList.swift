@@ -12,8 +12,20 @@ struct FavoritesList: View {
     let onSelect: (FavoriteLocation) -> Void
     
     @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.modelContext) private var modelContext
+
     @Query private var favorites: [FavoriteLocation]
+    
+    @State private var presentWarning = false
+
+    func removeFavorite(_ item: FavoriteLocation) {
+        do {
+            modelContext.delete(item)
+            try modelContext.save()
+        } catch {
+            self.presentWarning = true
+        }
+    }
     
     var body: some View {
         NavigationStack {
@@ -50,12 +62,22 @@ struct FavoritesList: View {
                                 .entireFramePressable()
                             }
                             .buttonStyle(.plain)
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    removeFavorite(favorite)
+                                } label: {
+                                    Image(systemName: "trash")
+                                }
+                            }
                         }
                     }
                 }
             }
             .navigationTitle("Favorites")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("Operation Failed", isPresented: $presentWarning, actions: {
+                Button("Okay") {}
+            })
         }
     }
 }

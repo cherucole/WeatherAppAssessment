@@ -12,17 +12,17 @@ struct FavoriteButton: View {
     let currentWeather: CurrentWeather
     
     @Environment(\.modelContext) private var modelContext
-    @State private var isFavorite = false
+    
+    @Query private var favorites: [FavoriteLocation]
+    
+    var favoriteNameSet: Set<String> {
+        Set(favorites.map(\.name))
+    }
     
     @State private var presentWarning = false
     
     func isFavorite(_ name: String) -> Bool {
-        var descriptor = FetchDescriptor<FavoriteLocation>()
-        descriptor.predicate = #Predicate { item in
-            item.name == name
-        }
-        let filteredList = (try? modelContext.fetch(descriptor)) ?? []
-        return !filteredList.isEmpty
+        favoriteNameSet.contains(name)
     }
     
     func favoriteLocation(_ currentWeather: CurrentWeather) {
@@ -30,7 +30,6 @@ struct FavoriteButton: View {
             let item = FavoriteLocation(currentWeather: currentWeather)
             modelContext.insert(item)
             try modelContext.save()
-            self.isFavorite = true
         } catch {
             self.presentWarning = true
         }
@@ -45,13 +44,13 @@ struct FavoriteButton: View {
         modelContext.delete(match)
         do {
             try modelContext.save()
-            self.isFavorite = false
         } catch {
             self.presentWarning = true
         }
     }
     
     func toggleFavorite() {
+        let isFavorite = isFavorite(currentWeather.name)
         if isFavorite {
             removeFavorite(currentWeather.name)
         } else {
@@ -63,18 +62,15 @@ struct FavoriteButton: View {
         Button {
             toggleFavorite()
         } label: {
-            Image(systemName: isFavorite ? "star.fill" : "star")
+            Image(systemName: isFavorite(currentWeather.name) ? "star.fill" : "star")
                 .imageScale(.large)
-                .foregroundStyle(isFavorite ? .orange : .primary)
+                .foregroundStyle(isFavorite(currentWeather.name) ? .orange : .primary)
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.circle)
         .alert("Operation Failed", isPresented: $presentWarning, actions: {
             Button("Okay") {}
         })
-        .onAppear {
-            self.isFavorite = isFavorite(currentWeather.name)
-        }
     }
 }
 
