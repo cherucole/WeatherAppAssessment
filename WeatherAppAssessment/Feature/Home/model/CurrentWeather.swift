@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-struct CurrentWeather {
+struct CurrentWeather: Equatable {
     let temperature: Double
     let description: String
     let minTemp: Double
