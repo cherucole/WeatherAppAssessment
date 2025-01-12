@@ -8,11 +8,6 @@
 import SwiftUI
 import MapKit
 
-// add a favorites button on top right
-// add a list icon on footer to open favourites
-// add a view on map icon/button for current weather
-// add a serach icon to allow searching cities
-
 struct HomeView: View {
     @Environment(LocationViewModel.self) private var locationVM
     

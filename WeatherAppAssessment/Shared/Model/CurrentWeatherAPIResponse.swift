@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CurrentWeatherAPIResponse: Decodable {
+struct CurrentWeatherAPIResponse: Codable, Equatable {
     let coord: Coord
     let weather: [Weather]
     let base: String
@@ -23,19 +23,19 @@ struct CurrentWeatherAPIResponse: Decodable {
     let name: String
     let cod: Int
     
-    struct Coord: Decodable {
+    struct Coord: Codable, Equatable {
         let lon: Double
         let lat: Double
     }
     
-    struct Weather: Decodable {
+    struct Weather: Codable, Equatable {
         let id: Int
         let main: String
         let description: String
         let icon: String
     }
     
-    struct Main: Decodable {
+    struct Main: Codable, Equatable {
         let temp: Double
         let feelsLike: Double
         let tempMin: Double
@@ -57,13 +57,13 @@ struct CurrentWeatherAPIResponse: Decodable {
         }
     }
     
-    struct Wind: Decodable {
+    struct Wind: Codable, Equatable {
         let speed: Double
         let deg: Int
         let gust: Double?
     }
     
-    struct Rain: Decodable {
+    struct Rain: Codable, Equatable {
         let oneHour: Double?
         
         enum CodingKeys: String, CodingKey {
@@ -71,11 +71,11 @@ struct CurrentWeatherAPIResponse: Decodable {
         }
     }
     
-    struct Clouds: Decodable {
+    struct Clouds: Codable, Equatable {
         let all: Int
     }
     
-    struct Sys: Decodable {
+    struct Sys: Codable, Equatable {
         let country: String
         let sunrise: Int
         let sunset: Int
