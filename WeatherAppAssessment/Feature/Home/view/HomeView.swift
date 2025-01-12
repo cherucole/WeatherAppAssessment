@@ -24,6 +24,9 @@ struct HomeView: View {
     
     @State private var mapSelection: CoordinateSelection?
     
+    @State private var presentSearchForm = false
+    @State private var cityName = ""
+    
     var body: some View {
         VStack(spacing: 0) {
             switch weatherVM.status {
@@ -41,9 +44,23 @@ struct HomeView: View {
                 .foregroundStyle(.white)
                 .ignoresSafeArea()
                 .background(backgroundColor(weather.description))
-                .overlay(alignment: .topTrailing) {
-                    FavoriteButton(currentWeather: weather)
-                        .padding(.trailing, 12)
+                .overlay(alignment: .top) {
+                    HStack {
+                        Button {
+                            presentSearchForm = true
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .imageScale(.large)
+                        }
+                        .foregroundStyle(.primary)
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.circle)
+                        
+                        Spacer()
+                        
+                        FavoriteButton(currentWeather: weather)
+                    }
+                    .padding(.horizontal, 12)
                 }
                 .safeAreaInset(edge: .bottom) {
                     HStack {
@@ -66,6 +83,20 @@ struct HomeView: View {
                 }
                 .sheet(isPresented: $presentExtraInfo) {
                     ExtraInformationSheet(weather: weather)
+                }
+                .alert("Enter City Name", isPresented: $presentSearchForm) {
+                    TextField("city name", text: $cityName)
+                        .textInputAutocapitalization(.none)
+                    Button("View") {
+                        guard !cityName.trimmed.isEmpty else { return }
+                        Task {
+                            await weatherVM.getWeather(city: cityName)
+                            cityName = ""
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {
+                        cityName = ""
+                    }
                 }
             case .error(let description):
                 ContentUnavailableView("Something Went Wrong", systemImage: "exclamationmark.triangle", description: Text("\(description). Please try again"))

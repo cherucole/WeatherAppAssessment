@@ -43,4 +43,14 @@ final class WeatherViewModel {
             status = .error(description: error.localizedDescription)
         }
     }
+    
+    func getWeather(city: String) async {
+        status = .loading
+        do {
+            let weather = try await service.getWeatherForCity(name: city)
+            await getWeather(for: .init(latitude: weather.coord.lat, longitude: weather.coord.lon))
+        } catch {
+            status = .error(description: error.localizedDescription)
+        }
+    }
 }

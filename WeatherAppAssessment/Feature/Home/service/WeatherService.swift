@@ -14,6 +14,7 @@ fileprivate let logger = Logger.createLog(category: "WeatherService")
 protocol WeatherService {
     func getCurrentWeather(location: CLLocationCoordinate2D) async throws -> CurrentWeatherAPIResponse
     func getFiveDayForecast(location: CLLocationCoordinate2D) async throws -> WeatherForecastAPIResponse
+    func getWeatherForCity(name: String) async throws -> CurrentWeatherAPIResponse
 }
 
 struct OpenWeatherService: WeatherService {
@@ -49,6 +50,19 @@ struct OpenWeatherService: WeatherService {
         let forecastResponse: WeatherForecastAPIResponse = try parser.parse(data: data)
         logger.log("weather forecast retrieved successfully")
         return forecastResponse
+    }
+    
+    func getWeatherForCity(name: String) async throws -> CurrentWeatherAPIResponse {
+        let currentWeatherBaseURL = "https://api.openweathermap.org/data/2.5/weather?q=\(name)&appid=\(APIConstants.openWeatherAPIKey)&units=metric"
+        let request = try urlRequest(urlString: currentWeatherBaseURL)
+        let (data, response) = try await client.request(request: request)
+        guard response.statusCode == 200 else {
+            logger.warning("Failed to get current weather")
+            throw Error.other(message: "Failed to get current weather")
+        }
+        let weatherResponse: CurrentWeatherAPIResponse = try parser.parse(data: data)
+        logger.log("Current weather retrieved successfully")
+        return weatherResponse
     }
     
     private func urlRequest(urlString: String) throws -> URLRequest {
