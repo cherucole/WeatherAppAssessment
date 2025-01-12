@@ -14,6 +14,11 @@ import MapKit
 // add a serach icon to allow searching cities
 
 struct HomeView: View {
+    struct CoordinateSelection: Identifiable {
+        let id = UUID()
+        let coordinates: CLLocationCoordinate2D
+    }
+    
     @Environment(LocationViewModel.self) private var locationVM
     
     @State private var weatherVM = WeatherViewModel()
@@ -21,6 +26,8 @@ struct HomeView: View {
     
     @State private var presentFavorites = false
     @State private var presentExtraInfo = false
+    
+    @State private var mapSelection: CoordinateSelection?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -43,6 +50,27 @@ struct HomeView: View {
                     FavoriteButton(currentWeather: weather)
                         .padding(.trailing, 12)
                 }
+                .safeAreaInset(edge: .bottom) {
+                    HStack {
+                        Button("Favorites") {
+                            presentFavorites = true
+                        }
+                        .buttonStyle(.plain)
+                        Spacer()
+                        Button {
+                            mapSelection = .init(coordinates: weather.coordinates)
+                        } label: {
+                            Image(systemName: "map")
+                                .imageScale(.large)
+                        }
+        //                Text("Search")
+        //                Label("Search", systemImage: "magnifyingglass")
+                    }
+                    .foregroundStyle(.white)
+                    .font(.title3.weight(.medium))
+                    .padding()
+                    .background(Material.ultraThin.opacity(0.4))
+                }
                 .sheet(isPresented: $presentExtraInfo, content: {
                     extraInfoSheet(weather)
                 })
@@ -50,24 +78,12 @@ struct HomeView: View {
                 ContentUnavailableView("Something Went Wrong", systemImage: "exclamationmark.triangle", description: Text("\(description). Please try again"))
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            HStack {
-                Button("Favorites") {
-                    presentFavorites = true
-                }
-                .buttonStyle(.plain)
-                Spacer()
-                Text("Search")
-//                Label("Search", systemImage: "magnifyingglass")
-            }
-            .foregroundStyle(.white)
-            .font(.title3.weight(.medium))
-            .padding()
-            .background(Material.ultraThin.opacity(0.4))
-        }
         .sheet(isPresented: $presentFavorites) {
             FavoritesList()
         }
+        .sheet(item: $mapSelection, content: { selection in
+            MapView(location: selection.coordinates)
+        })
         .task {
             self.location = locationVM.getUserLocation()
         }
