@@ -20,6 +20,7 @@ struct HomeView: View {
     @State var location: CLLocationCoordinate2D?
     
     @State private var presentFavorites = false
+    @State private var presentExtraInfo = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -42,6 +43,9 @@ struct HomeView: View {
                     FavoriteButton(currentWeather: weather)
                         .padding(.trailing, 12)
                 }
+                .sheet(isPresented: $presentExtraInfo, content: {
+                    extraInfoSheet(weather)
+                })
             case .error(let description):
                 ContentUnavailableView("Something Went Wrong", systemImage: "exclamationmark.triangle", description: Text("\(description). Please try again"))
             }
@@ -101,12 +105,68 @@ struct HomeView: View {
     }
     
     @ViewBuilder
+    func extraInfoSheet(_ weather: CurrentWeather) -> some View {
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading) {
+                Text(weather.name)
+                    .font(.title)
+                Text(weather.country)
+                    .font(.title3)
+            }
+            
+            VStack(alignment: .leading) {
+                Image(systemName: "mappin")
+                LabeledContent("Longitude", value: weather.coordinates.longitude.formatted())
+                LabeledContent("Latitude", value: weather.coordinates.latitude.formatted())
+            }
+            .padding(.vertical)
+            
+            VStack(alignment: .leading) {
+                Image(systemName: "sun.horizon")
+                LabeledContent("Sunrise", value: weather.sunrise.formatted(.dateTime.hour().minute()))
+                LabeledContent("Sunset", value: weather.sunset.formatted(.dateTime.hour().minute()))
+            }
+            .padding(.vertical)
+
+            Text("Last updated: \(Date(), format: .reference(to: weather.date))")
+        }
+//        .foregroundStyle(.white)
+        .fontWeight(.medium)
+//        .presentationBackground(backgroundColor(weather.description))
+        .presentationDetents([.medium])
+        .presentationCornerRadius(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(20)
+        .overlay(alignment: .topTrailing) {
+            Button {
+                presentExtraInfo = false
+            } label: {
+                Image(systemName: "plus")
+                    .imageScale(.large)
+                    .rotationEffect(.degrees(45))
+            }
+            .fontWeight(.medium)
+            .foregroundStyle(.primary)
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.circle)
+            .padding()
+        }
+    }
+    
+    @ViewBuilder
     func headerView(_ weather: CurrentWeather) -> some View {
         VStack(spacing: 8) {
             Text(weather.temperature.toTemperatureString())
                 .font(.system(size: 56, weight: .medium))
             Text(weather.description.uppercased())
                 .font(.system(size: 36, weight: .medium))
+            
+            Button("More Information") {
+                presentExtraInfo = true
+            }
+            .font(.title3.weight(.medium))
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {

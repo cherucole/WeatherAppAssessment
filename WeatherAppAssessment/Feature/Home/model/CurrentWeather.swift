@@ -16,6 +16,9 @@ struct CurrentWeather {
     let name: String
     let coordinates: CLLocationCoordinate2D
     let date: Date
+    let sunrise: Date
+    let sunset: Date
+    let country: String
 }
 
 extension CurrentWeather {
@@ -27,6 +30,9 @@ extension CurrentWeather {
         self.name = apiResponse.name
         self.coordinates = .init(latitude: apiResponse.coord.lat, longitude: apiResponse.coord.lon)
         self.date = Date(timeIntervalSince1970: Double(apiResponse.dt))
+        self.sunrise = Date(timeIntervalSince1970: Double(apiResponse.sys.sunrise))
+        self.sunset = Date(timeIntervalSince1970: Double(apiResponse.sys.sunset))
+        self.country = apiResponse.sys.country
     }
 }
 
