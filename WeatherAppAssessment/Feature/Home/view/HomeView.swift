@@ -103,7 +103,11 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $presentFavorites) {
-            FavoritesList()
+            FavoritesList { selection in
+                Task {
+                    await weatherVM.getWeather(for: .init(latitude: selection.coordinates.latitude, longitude: selection.coordinates.longitude))
+                }
+            }
         }
         .sheet(item: $mapSelection) { selection in
             MapView(location: selection.coordinates)
@@ -147,6 +151,8 @@ struct HomeView: View {
     @ViewBuilder
     func headerView(_ weather: CurrentWeather) -> some View {
         VStack(spacing: 8) {
+            Text(weather.name)
+                .font(.title3.weight(.medium))
             Text(weather.temperature.toTemperatureString())
                 .font(.system(size: 56, weight: .medium))
             Text(weather.description.uppercased())

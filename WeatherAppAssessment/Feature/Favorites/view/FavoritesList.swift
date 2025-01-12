@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct FavoritesList: View {
+    let onSelect: (FavoriteLocation) -> Void
+    
     @Environment(\.dismiss) private var dismiss
     
     @Query private var favorites: [FavoriteLocation]
@@ -30,7 +32,24 @@ struct FavoritesList: View {
                 } else {
                     List {
                         ForEach(favorites) { favorite in
-                            Text(favorite.name)
+                            Button {
+                                onSelect(favorite)
+                                dismiss()
+                            } label: {
+                                HStack {
+                                    Text(favorite.name.getAcronym())
+                                        .font(.title3)
+                                        .frame(width: 44, height: 44)
+                                        .background(Material.regular)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    
+                                    Text(favorite.name)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .font(.title3)
+                                .entireFramePressable()
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -42,5 +61,5 @@ struct FavoritesList: View {
 }
 
 #Preview {
-    FavoritesList()
+    FavoritesList(onSelect: {_ in})
 }
