@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct WeatherForecastAPIResponse: Codable {
+struct WeatherForecastAPIResponse: Codable, Equatable {
     let cod: String
     let message: Int
     let cnt: Int
     let list: [WeatherResponse]
     
-    struct WeatherResponse: Codable {
+    struct WeatherResponse: Codable, Equatable {
         let dt: Int
         let main: Main
         let weather: [Weather]
@@ -29,7 +29,7 @@ struct WeatherForecastAPIResponse: Codable {
             case dtTxt = "dt_txt"
         }
 
-        struct Main: Codable {
+        struct Main: Codable, Equatable {
             let temp: Double
             let feelsLike: Double
             let tempMin: Double
@@ -53,24 +53,24 @@ struct WeatherForecastAPIResponse: Codable {
             }
         }
 
-        struct Weather: Codable {
+        struct Weather: Codable, Equatable {
             let id: Int
             let main: String
             let description: String
             let icon: String
         }
 
-        struct Clouds: Codable {
+        struct Clouds: Codable, Equatable {
             let all: Int
         }
 
-        struct Wind: Codable {
+        struct Wind: Codable, Equatable {
             let speed: Double
             let deg: Int
             let gust: Double
         }
 
-        struct Sys: Codable {
+        struct Sys: Codable, Equatable {
             let pod: String
         }
     }

@@ -27,7 +27,7 @@ final class OpenWeatherServiceTests: XCTestCase {
     
     func testGetCurrentWeather_Success() async throws {
         // given
-        let location = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
+        let location = mockLocation()
         let expectedResponse = Mock.currentWeather()
         mockClient.mockResponse = (try JSONEncoder().encode(expectedResponse), HTTPURLResponse(statusCode: 200))
         
@@ -36,6 +36,64 @@ final class OpenWeatherServiceTests: XCTestCase {
         
         // then
         XCTAssertEqual(result, expectedResponse)
+    }
+    
+    func testGetCurrentWeather_Failure_InvalidResponse() async {
+        let location = mockLocation()
+        mockClient.mockResponse = (Data(), HTTPURLResponse(statusCode: 400))
+        do {
+            _ = try await sut.getCurrentWeather(location: location)
+            XCTFail("Expected error but got success")
+        } catch {
+            XCTAssertTrue(error is OpenWeatherService.Error)
+        }
+    }
+    
+    func testGetFiveDayForecast_Success() async throws {
+        let location = mockLocation()
+        let expectedResponse = Mock.weatherForecast()
+        mockClient.mockResponse = (try JSONEncoder().encode(expectedResponse), HTTPURLResponse(statusCode: 200))
+        
+        let result = try await sut.getFiveDayForecast(location: location)
+        
+        XCTAssertEqual(result, expectedResponse)
+    }
+    
+    func testGetFiveDayForecast_Failure_InvalidResponse() async {
+        let location = mockLocation()
+        mockClient.mockResponse = (Data(), HTTPURLResponse(statusCode: 400))
+        do {
+            _ = try await sut.getFiveDayForecast(location: location)
+            XCTFail("Expected error but got success")
+        } catch {
+            XCTAssertTrue(error is OpenWeatherService.Error)
+        }
+    }
+    
+    func testGetWeatherForCity_Success() async throws {
+        let cityName = "San Francisco"
+        let expectedResponse = Mock.currentWeather()
+        mockClient.mockResponse = (try JSONEncoder().encode(expectedResponse), HTTPURLResponse(statusCode: 200))
+        
+        let result = try await sut.getWeatherForCity(name: cityName)
+        
+        XCTAssertEqual(result, expectedResponse)
+    }
+    
+    func testGetWeatherForCity_Failure_InvalidResponse() async {
+        let cityName = "San Francisco"
+        mockClient.mockResponse = (Data(), HTTPURLResponse(statusCode: 400))
+
+        do {
+            _ = try await sut.getWeatherForCity(name: cityName)
+            XCTFail("Expected error but got success")
+        } catch {
+            XCTAssertTrue(error is OpenWeatherService.Error)
+        }
+    }
+    
+    private func mockLocation() -> CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
     }
 }
 
