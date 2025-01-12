@@ -26,15 +26,12 @@ final class OpenWeatherServiceTests: XCTestCase {
     }
     
     func testGetCurrentWeather_Success() async throws {
-        // given
         let location = mockLocation()
         let expectedResponse = Mock.currentWeather()
         mockClient.mockResponse = (try JSONEncoder().encode(expectedResponse), HTTPURLResponse(statusCode: 200))
         
-        // when
         let result = try await sut.getCurrentWeather(location: location)
         
-        // then
         XCTAssertEqual(result, expectedResponse)
     }
     

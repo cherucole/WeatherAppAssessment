@@ -28,7 +28,7 @@ struct Mock {
         return try! parser.parse(data: data)
     }
     
-    private static func loadFileContents(fileName: String) throws -> Data { // need to correctly add resources in package config for bundle.module to be available
+    private static func loadFileContents(fileName: String) throws -> Data {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else { throw ServiceError.missingFile }
         let data = try Data(contentsOf: url)
         return data

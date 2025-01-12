@@ -20,7 +20,6 @@ struct MapView: View {
     }
     
     var body: some View {
-//        Map(initialPosition: .region(region)) { }
         Map(coordinateRegion: $region, showsUserLocation: true)
             .ignoresSafeArea()
             .overlay(alignment: .topTrailing) {
