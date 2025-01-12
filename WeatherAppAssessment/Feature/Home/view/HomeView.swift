@@ -171,7 +171,7 @@ struct HomeView: View {
             Text(weather.description.uppercased())
                 .font(.system(size: 36, weight: .medium))
             
-            Button("More Information") {
+            Button("See more info") {
                 presentExtraInfo = true
             }
             .font(.title3.weight(.medium))
