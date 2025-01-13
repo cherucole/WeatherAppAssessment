@@ -41,6 +41,9 @@ A minimalistic weather app built with Swift and SwiftData. This app is designed 
 ### steps
 1. Clone the repository or download as zip file
 2. Navigate to the xcodeproj file and open
+3. Configure the API Key:
+- Navigate to Shared/Utils/APIConstants.swift.
+- Replace YOUR_API_KEY_HERE with your weather API key from [OpenWeatherMap](https://home.openweathermap.org/api_keys).
 3. Build and run the app
 
 ## Additional Notes
